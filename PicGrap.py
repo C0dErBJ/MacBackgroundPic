@@ -11,22 +11,9 @@ import time
 import io
 import requests
 import json
-from PIL import Image
 
 path = os.path.abspath('/Library/Desktop pictures/')
 sleeptime = 300
-
-
-def randomNum():
-    num = random.randint(10000000, 19999999)
-    if os.path.exists(path + str(num) + ",2560,1600.jpg"):
-        randomNum()
-    else:
-        return num
-
-
-def imageFilter(img):
-    print(img.info['dpi'])
 
 
 def register():
@@ -47,7 +34,7 @@ def register():
     }
     response = requests.post(
         url, data=options, headers=headers, params=querystring)
-    jsonstring = json.loads(json.dumps(response.json()))
+    jsonstring = response.json()
     urlLists = []
     for x in jsonstring:
         if len(x['image']['original']) > 0:
@@ -60,29 +47,23 @@ def getImage():
     while(1):
         urllist = register()
         while len(urllist) > 0:
-        	time.sleep(sleeptime)
-                try:
-                    print(urllist[len(urllist)-1])
-                    response = urllib.urlopen(urllist[len(urllist)-1])
-                    s = response.read()
-                    strs = urllist[len(urllist)-1].split("/")
-                    print(strs[len(strs) - 1])
-                    fl = open(path + "/" + strs[len(strs) - 1], "w")
-                    fl.write(s)
-                    fl.close()
-                except:
-                    print("503 error")
-                del urllist[len(urllist)-1]
+            try:
+                print(urllist[len(urllist) - 1])
+                response = requests.get(urllist[len(urllist) - 1])
+                strs = urllist[len(urllist) - 1].split("/")
+                fl = open(path + "/" + strs[len(strs) - 1], "w")
+                fl.write(response.content)
+                fl.close()
+                print("save:" + strs[len(strs) - 1])
+            except:
+                print("503 error")
+            del urllist[len(urllist) - 1]
+            time.sleep(sleeptime)
         pass
-       
-    # img = Image.open('a.jpg')
-    # img.show()
 
 
 def main():
-    # try:
-    # print("start")
-    getImage()
-   
+   getImage()
+
 if __name__ == '__main__':
     main()

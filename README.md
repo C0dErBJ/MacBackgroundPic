@@ -1,2 +1,3 @@
 # MacBackgroundPic
- get picture from 'lovebizhi'
+ get picture from 'lovebizhi' 
+
